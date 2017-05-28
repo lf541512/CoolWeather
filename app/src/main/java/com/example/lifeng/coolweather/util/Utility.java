@@ -4,8 +4,10 @@ import android.text.TextUtils;
 
 
 import com.example.lifeng.coolweather.db.City;
-import com.example.lifeng.coolweather.db.Country;
+import com.example.lifeng.coolweather.db.County;
 import com.example.lifeng.coolweather.db.Province;
+import com.example.lifeng.coolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,11 +64,11 @@ public class Utility {
                 JSONArray allCounties=new JSONArray(res);
                 for (int i=0;i<allCounties.length();i++){
                     JSONObject countObj=allCounties.getJSONObject(i);
-                    Country country=new Country();
-                    country.setCountyName(countObj.getString("name"));
-                    country.setWeatherId(countObj.getString("weather_id"));
-                    country.setCityId(cId);
-                    country.save();
+                    County county =new County();
+                    county.setCountyName(countObj.getString("name"));
+                    county.setWeatherId(countObj.getString("weather_id"));
+                    county.setCityId(cId);
+                    county.save();
                 }
                 return true;
             }catch (JSONException e){
@@ -75,5 +77,16 @@ public class Utility {
 
         }
         return false;
+    }
+    public static Weather handleWeatherRes(String res) {
+        try {
+            JSONObject jsonObject=new JSONObject(res);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
